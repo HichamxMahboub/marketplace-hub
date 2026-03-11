@@ -49,12 +49,12 @@ export default function VendorDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <nav className="bg-white border-b">
+      <nav className="bg-blue-600 border-b border-blue-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-blue-600">MarketHub</Link>
+          <Link href="/" className="text-2xl font-bold text-white">MarketHub</Link>
           <div className="flex gap-4">
-            <Link href="/shop" className="px-4 py-2 hover:text-blue-600">Shop</Link>
-            <Link href="/api/auth/logout" className="px-4 py-2 hover:text-blue-600">Logout</Link>
+            <Link href="/shop" className="px-4 py-2 text-white hover:text-blue-100">Shop</Link>
+            <Link href="/api/auth/logout" className="px-4 py-2 text-white hover:text-blue-100">Logout</Link>
           </div>
         </div>
       </nav>

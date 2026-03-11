@@ -1,50 +1,47 @@
-import NextAuth from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import { cookies } from "next/headers"
+import { prisma } from "./prisma"
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    Credentials({
-      credentials: {
-        email: {},
-        password: {},
-      },
-      authorize: async (credentials) => {
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
-          include: { vendor: true }
-        })
+export async function auth() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("session")?.value
+  
+  if (!token) return null
 
-        if (!user || !await bcrypt.compare(credentials.password as string, user.password)) {
-          return null
-        }
+  try {
+    const userId = Buffer.from(token, "base64").toString("utf-8")
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { vendor: true }
+    })
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          vendorId: user.vendor?.id
-        }
-      },
-    }),
-  ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.role = user.role
-        token.vendorId = user.vendorId
+    if (!user) return null
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        vendorId: user.vendor?.id
       }
-      return token
-    },
-    session({ session, token }) {
-      session.user.role = token.role
-      session.user.vendorId = token.vendorId
-      return session
-    },
-  },
-  pages: {
-    signIn: '/login',
-  },
-})
+    }
+  } catch {
+    return null
+  }
+}
+
+export async function createSession(userId: string) {
+  const token = Buffer.from(userId).toString("base64")
+  const cookieStore = await cookies()
+  cookieStore.set("session", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7 // 7 days
+  })
+}
+
+export async function destroySession() {
+  const cookieStore = await cookies()
+  cookieStore.delete("session")
+}

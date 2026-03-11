@@ -1,19 +1,21 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
-async function getProducts() {
-  try {
-    const res = await fetch(`http://localhost:3000/api/products`, {
-      cache: "no-store",
-    })
-    if (!res.ok) return []
-    return res.json()
-  } catch {
-    return []
-  }
-}
+export default function ShopPage() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
-export default async function ShopPage() {
-  const products = await getProducts()
+  useEffect(() => {
+    fetch("/api/products")
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,10 +32,12 @@ export default async function ShopPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Browse Products</h1>
         
-        {products.length === 0 ? (
+        {loading ? (
+          <p className="text-center py-20">Loading...</p>
+        ) : products.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-xl text-gray-600 mb-4">No products yet</p>
-            <Link href="/vendor/register" className="text-blue-600 hover:underline">
+            <Link href="/register" className="text-blue-600 hover:underline">
               Become a vendor and add products
             </Link>
           </div>
@@ -51,7 +55,9 @@ export default async function ShopPage() {
                   {product.description}
                 </p>
                 <p className="text-xl font-bold">${product.price}</p>
-                <p className="text-sm text-gray-500">{product.vendor.storeName}</p>
+                {product.vendor && (
+                  <p className="text-sm text-gray-500">{product.vendor.storeName}</p>
+                )}
               </Link>
             ))}
           </div>

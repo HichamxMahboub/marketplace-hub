@@ -89,7 +89,7 @@ export default function RegisterPage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
           >
             Create account
           </button>

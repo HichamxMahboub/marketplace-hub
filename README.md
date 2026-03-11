@@ -4,6 +4,10 @@ A full-featured e-commerce platform enabling multiple vendors to sell products w
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue) ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 
+## 🎯 Live Demo
+
+**Repository:** https://github.com/HichamxMahboub/marketplace-hub
+
 ## ✨ Features
 
 ### For Customers
@@ -25,93 +29,49 @@ A full-featured e-commerce platform enabling multiple vendors to sell products w
 - 👥 User and vendor management
 - 🔐 Vendor approval system
 - 📊 Platform-wide analytics
-- 🛡️ Content moderation
 
-## 🚀 Tech Stack
+## 🚀 Quick Start
+
+### One-Command Setup
+
+```bash
+./setup.sh
+```
+
+### Manual Setup
+
+```bash
+# 1. Copy environment file
+cp .env.example .env
+
+# 2. Add your Stripe keys to .env
+# Get them from: https://dashboard.stripe.com/test/apikeys
+
+# 3. Start with Docker
+docker-compose up --build -d
+
+# 4. Access at http://localhost:3000
+```
+
+## 📱 Pages & Routes
+
+- `/` - Landing page
+- `/register` - Create account (Customer or Vendor)
+- `/login` - Sign in
+- `/shop` - Browse all products
+- `/dashboard` - Vendor dashboard (add/manage products)
+- `/cart` - Shopping cart
+- `/checkout` - Payment processing
+
+## 🛠️ Tech Stack
 
 - **Frontend:** Next.js 16, React 19, Tailwind CSS
 - **Backend:** Next.js API Routes, Prisma ORM
 - **Database:** PostgreSQL 16
 - **Cache:** Redis 7
 - **Payments:** Stripe Connect
-- **Auth:** NextAuth.js v5
+- **Auth:** JWT-based authentication
 - **Deployment:** Docker + Docker Compose
-
-## 📦 Quick Start
-
-### Prerequisites
-- Docker & Docker Compose
-- Stripe account (free test mode)
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/HichamxMahboub/marketplace-hub.git
-cd marketplace-hub
-
-# Copy environment variables
-cp .env.example .env
-
-# Add your Stripe keys to .env
-# Get them from: https://dashboard.stripe.com/test/apikeys
-
-# Start with Docker
-npm run docker:build
-
-# Access at http://localhost:3000
-```
-
-That's it! Docker handles all dependencies and database setup.
-
-## 🎯 Architecture
-
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Next.js   │────▶│  PostgreSQL  │     │   Stripe    │
-│  Frontend   │     │   Database   │     │   Connect   │
-│  + API      │     └──────────────┘     └─────────────┘
-└─────────────┘            │                     │
-       │                   │                     │
-       ▼                   ▼                     ▼
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Redis     │     │    Prisma    │     │  Payment    │
-│   Cache     │     │     ORM      │     │   Splits    │
-└─────────────┘     └──────────────┘     └─────────────┘
-```
-
-## 📁 Project Structure
-
-```
-marketplace-hub/
-├── app/
-│   ├── api/              # Backend API routes
-│   ├── (shop)/           # Customer-facing pages
-│   ├── (vendor)/         # Vendor dashboard
-│   └── (auth)/           # Authentication pages
-├── components/           # Reusable React components
-├── lib/                  # Utilities and configurations
-├── prisma/              # Database schema and migrations
-└── docker-compose.yml   # Docker services
-```
-
-## 🔧 Environment Variables
-
-```env
-DATABASE_URL=postgresql://user:pass@localhost:5432/marketplace
-REDIS_URL=redis://localhost:6379
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-secret-key
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-```
-
-## 🧪 Testing
-
-Use Stripe test cards:
-- Success: `4242 4242 4242 4242`
-- Decline: `4000 0000 0000 0002`
-- 3D Secure: `4000 0025 0000 3155`
 
 ## 📊 Database Schema
 
@@ -119,51 +79,74 @@ Use Stripe test cards:
 - **Vendors** - Vendor profiles with Stripe Connect
 - **Products** - Product listings with inventory
 - **Orders** - Order management and tracking
+- **Cart** - Shopping cart items
 - **Reviews** - Product ratings and feedback
 
-## 🛠️ Development
+## 🎨 Screenshots
+
+### Landing Page
+Clean, modern landing page with call-to-actions for customers and vendors.
+
+### Shop Page
+Grid layout displaying all products from multiple vendors.
+
+### Vendor Dashboard
+Simple interface for vendors to add and manage their products.
+
+### Authentication
+Clean login and registration forms with role selection.
+
+## 🧪 Testing
+
+Use Stripe test cards:
+- Success: `4242 4242 4242 4242`
+- Decline: `4000 0000 0000 0002`
+
+## 🛠️ Development Commands
 
 ```bash
-# Start services
-npm run docker:up
+# View logs
+docker-compose logs -f app
 
 # Stop services
-npm run docker:down
+docker-compose down
 
-# View logs
-npm run docker:logs
+# Restart services
+docker-compose restart
 
 # Access database
-docker exec -it marketplace-db psql -U marketplace
+docker exec -it marketplace-db psql -U marketplace -d marketplace_hub
+
+# Rebuild
+docker-compose up --build -d
 ```
 
-## 🚢 Deployment
+## 📝 API Endpoints
 
-Ready for deployment to:
-- Vercel (recommended for Next.js)
-- Railway
-- AWS ECS
-- Any Docker-compatible platform
-
-## 📝 API Documentation
+### Authentication
+- `POST /api/auth/register` - Create account
+- `POST /api/auth/login` - Sign in
+- `POST /api/auth/logout` - Sign out
 
 ### Products
-- `GET /api/products` - List products
-- `POST /api/products` - Create product
-- `PUT /api/products/[id]` - Update product
-- `DELETE /api/products/[id]` - Delete product
+- `GET /api/products` - List all products
+- `POST /api/products` - Create product (vendor only)
 
 ### Cart
-- `GET /api/cart` - Get cart
+- `GET /api/cart` - Get user's cart
 - `POST /api/cart` - Add to cart
 - `DELETE /api/cart` - Remove from cart
 
 ### Checkout
 - `POST /api/checkout` - Process payment
 
-## 🤝 Contributing
+## 🚢 Deployment
 
-Contributions welcome! Please open an issue or submit a PR.
+Ready for deployment to:
+- **Vercel** (recommended for Next.js)
+- **Railway**
+- **AWS ECS**
+- Any Docker-compatible platform
 
 ## 📄 License
 
@@ -173,7 +156,6 @@ MIT License - feel free to use for your projects
 
 **Hicham Mahboub**
 - GitHub: [@HichamxMahboub](https://github.com/HichamxMahboub)
-- Fiverr: [Your Fiverr Profile]
 
 ## 🌟 Show Your Support
 
